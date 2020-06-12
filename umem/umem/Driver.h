@@ -13,6 +13,7 @@ public:
 	void SendCommand(Command* cmd);
 	void CopyVirtual(bool read, uint64_t destination, uint64_t source, SIZE_T size);
 	bool Init(int targetPid);
+	DWORD64 GetModuleInfo(PCWCHAR moduleName, ULONG* size);
 
 	template<typename T>
 	T Read(uint64_t address)

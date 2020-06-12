@@ -42,3 +42,21 @@ bool Driver::Init(int targetPid)
 
 	return true;
 }
+
+DWORD64 Driver::GetModuleInfo(PCWCHAR moduleName, ULONG* size)
+{
+	ModInfo info = { 0 };
+	info.Target = TargetProcessPid;
+	memcpy(info.Name, moduleName, wcslen(moduleName) * sizeof(wchar_t));
+
+	DWORD returned = 0;
+	bool status = DeviceIoControl(DriverHandle, IOCTL_MODINFO, &info, sizeof(ModInfo), &info, sizeof(ModInfo), &returned, nullptr);
+
+	if (!status)
+		return 0;
+
+	if (size)
+		*size = info.Size;
+
+	return info.BaseAddress;
+}

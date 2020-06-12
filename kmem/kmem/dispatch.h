@@ -25,6 +25,51 @@ void HandleCommand(Command* cmd)
     MmCopyVirtualMemory(sourceProcess, (PVOID)cmd->SourceAddress, targetProcess, (PVOID)cmd->TargetAddress, cmd->Size, KernelMode, &dummySize);
 }
 
+void HandleModInfo(ModInfo* info)
+{
+    /*PEPROCESS sourceProcess;
+    NTSTATUS status = PsLookupProcessByProcessId((HANDLE)input->Source, &sourceProcess);
+    if (!NT_SUCCESS(status))
+        return;*/
+    
+    PEPROCESS targetProcess;
+    NTSTATUS status = PsLookupProcessByProcessId((HANDLE)info->Target, &targetProcess);
+    if (!NT_SUCCESS(status))
+        return;
+
+    wchar_t moduleName[256];
+    memcpy(moduleName, info->Name, 256);
+
+    UNICODE_STRING moduleNameStr = { 0 };
+    RtlInitUnicodeString(&moduleNameStr, moduleName);
+
+    DWORD64 dllBaseAddress = 0;
+    ULONG dllSize = 0;
+
+    KAPC_STATE state;
+    KeStackAttachProcess(targetProcess, &state);
+
+    PPEB peb = PsGetProcessPeb(targetProcess);
+    for (PLIST_ENTRY pListEntry = peb->Ldr->InMemoryOrderModuleList.Flink; pListEntry != &peb->Ldr->InMemoryOrderModuleList; pListEntry = pListEntry->Flink)
+    {
+        PLDR_DATA_TABLE_ENTRY entry = CONTAINING_RECORD(pListEntry, LDR_DATA_TABLE_ENTRY, InMemoryOrderLinks);
+
+        if (RtlCompareUnicodeString(&entry->BaseDllName, &moduleNameStr, TRUE) == 0)
+        {
+            dllBaseAddress = (DWORD64)entry->DllBase;
+            dllSize = entry->SizeOfImage;
+            break;
+        }
+    }
+	
+    KeUnstackDetachProcess(&state);
+
+    ObDereferenceObject(targetProcess);
+
+    info->BaseAddress = dllBaseAddress;
+    info->Size = dllSize;
+}
+
 NTSTATUS Hooked(PDEVICE_OBJECT device, PIRP irp)
 {
     fnOriginal original = (fnOriginal)originalFunction;
@@ -39,11 +84,24 @@ NTSTATUS Hooked(PDEVICE_OBJECT device, PIRP irp)
         HandleCommand(command);
 
         irp->IoStatus.Status = STATUS_SUCCESS;
-        irp->IoStatus.Information = sizeof(command);
+        irp->IoStatus.Information = sizeof(Command);
         IoCompleteRequest(irp, IO_NO_INCREMENT);
 
         return STATUS_SUCCESS;
     }
+
+	if (code == IOCTL_MODINFO)
+	{
+        ModInfo* info = (ModInfo*)irp->AssociatedIrp.SystemBuffer;
+
+        HandleModInfo(info);
+
+        irp->IoStatus.Status = STATUS_SUCCESS;
+        irp->IoStatus.Information = sizeof(ModInfo);
+        IoCompleteRequest(irp, IO_NO_INCREMENT);
+
+        return STATUS_SUCCESS;
+	}
 
     return original(device, irp);
 }

@@ -9,6 +9,7 @@
 #include <intrin.h>
 
 #include "shared.h"
+#include "utils.h"
 #include "ntos.h"
 #include "scan.h"
 #include "dispatch.h"

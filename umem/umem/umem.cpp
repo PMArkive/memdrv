@@ -78,6 +78,11 @@ int main()
     duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
     printf("[BENCHMARK] Finished in %llu ms\n", duration);
 
+    printf("[BENCHMARK] Getting base address of kernel32.dll...\n");
+    ULONG size = 0;
+	DWORD64 baseAddress = driver.GetModuleInfo(L"kernel32.dll", &size); // pass nullptr as size if you don't need it
+    printf("[BENCHMARK] Base address: 0x%llx Size: %lu\n", baseAddress, size);
+
     /*printf("[BENCHMARK] Testing memory leaks...\n");
 	while (true)
 	{
@@ -88,5 +93,8 @@ int main()
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
         printf("[BENCHMARK] Finished in %llu ms\n", duration);
 	}*/
+
+    printf("\nPress any key to exit.\n");
+    getchar();
 }
 
