@@ -76,6 +76,18 @@ int main()
     duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
     printf("[BENCHMARK] Finished in %llu ms\n", duration);
 
+    printf("[BENCHMARK] Testing write...\n");
+    uint64_t testVar = 123;
+    driver.Write<uint64_t>(reinterpret_cast<uint64_t>(&testVar), 321);
+    if (testVar == 321)
+    {
+        printf("[BENCHMARK] Write successful\n");
+    }
+    else
+    {
+        printf("[BENCHMARK] Write failed\n");
+    }
+
     printf("[BENCHMARK] Reading 1 byte 10000 times...\n");
     t1 = std::chrono::high_resolution_clock::now();
     ReadByte(10000);
@@ -83,18 +95,8 @@ int main()
     duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
     printf("[BENCHMARK] Finished in %llu ms\n", duration);
 
-    /*printf("[BENCHMARK] Testing memory leaks...\n");
-	while (true)
-	{
-        printf("[BENCHMARK] Reading 8 bytes 1000000 times...\n");
-        auto t1 = std::chrono::high_resolution_clock::now();
-        Read8Bytes(1000000);
-        auto t2 = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
-        printf("[BENCHMARK] Finished in %llu ms\n", duration);
-	}*/
-
     printf("\nPress any key to exit.\n");
     getchar();
 }
+
 

@@ -16,6 +16,11 @@ void Driver::SendCommand(Command* cmd)
 
 void Driver::CopyVirtual(bool read, uint64_t destination, uint64_t source, SIZE_T size)
 {
+	if (LastWasRead != read)
+		Force = true;
+
+	LastWasRead = read;
+
 	Command cmd;
 	cmd.ForceOverwrite = Force;
 	cmd.Source = read ? TargetProcessPid : CurrentProcessPid;
@@ -39,6 +44,7 @@ bool Driver::Init(int targetPid)
 	CurrentProcessPid = GetCurrentProcessId();
 	TargetProcessPid = targetPid;
 	Force = true;
+	LastWasRead = true;
 
 	return true;
 }
