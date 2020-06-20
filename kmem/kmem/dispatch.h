@@ -5,21 +5,15 @@ typedef NTSTATUS(__stdcall* fnOriginal)(PDEVICE_OBJECT device, PIRP irp);
 
 void HandleCommand(Command* cmd)
 {
-    static PEPROCESS sourceProcess;
-	if (!sourceProcess || cmd->ForceOverwrite)
-	{
-        NTSTATUS status = PsLookupProcessByProcessId((HANDLE)cmd->Source, &sourceProcess);
-        if (!NT_SUCCESS(status))
-            return;
-	}
+    PEPROCESS sourceProcess;
+    NTSTATUS status = PsLookupProcessByProcessId((HANDLE)cmd->Source, &sourceProcess);
+    if (!NT_SUCCESS(status))
+        return;
 
-    static PEPROCESS targetProcess;
-    if (!targetProcess || cmd->ForceOverwrite)
-    {
-        NTSTATUS status = PsLookupProcessByProcessId((HANDLE)cmd->Target, &targetProcess);
-        if (!NT_SUCCESS(status))
-            return;
-    }
+    PEPROCESS targetProcess;
+    status = PsLookupProcessByProcessId((HANDLE)cmd->Target, &targetProcess);
+    if (!NT_SUCCESS(status))
+        return;    
 
     SIZE_T dummySize = 0;
     MmCopyVirtualMemory(sourceProcess, (PVOID)cmd->SourceAddress, targetProcess, (PVOID)cmd->TargetAddress, cmd->Size, KernelMode, &dummySize);

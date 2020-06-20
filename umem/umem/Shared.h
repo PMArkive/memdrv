@@ -10,7 +10,6 @@ typedef struct _Command
 {
 	int Source;
 	int Target;
-	int ForceOverwrite;
 	DWORD64 SourceAddress;
 	DWORD64 TargetAddress;
 	DWORD64 Size;
