@@ -27,11 +27,8 @@ void HandleCommand(Command* cmd)
     if (!NT_SUCCESS(status))
         return;    
 
-    if (MmIsAddressValid((void*)cmd->TargetAddress) && MmIsAddressValid((void*)cmd->SourceAddress))
-    {
-        SIZE_T dummySize = 0;
-        MmCopyVirtualMemory(sourceProcess, (PVOID)cmd->SourceAddress, targetProcess, (PVOID)cmd->TargetAddress, cmd->Size, KernelMode, &dummySize);
-    }
+    SIZE_T dummySize = 0;
+    MmCopyVirtualMemory(sourceProcess, (PVOID)cmd->SourceAddress, targetProcess, (PVOID)cmd->TargetAddress, cmd->Size, KernelMode, &dummySize);
 
     ObDereferenceObject(sourceProcess);
     ObDereferenceObject(targetProcess);

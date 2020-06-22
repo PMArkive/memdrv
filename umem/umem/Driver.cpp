@@ -66,3 +66,8 @@ DWORD64 Driver::GetModuleInfo(PCWCHAR moduleName, ULONG* size)
 
 	return info.BaseAddress;
 }
+
+void Driver::Close()
+{
+	CloseHandle(DriverHandle);
+}

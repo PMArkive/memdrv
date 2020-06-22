@@ -7,6 +7,7 @@
 #include <iostream>
 #include <chrono>
 #include "Driver.h"
+#include "Utils.h"
 
 Driver driver;
 
@@ -94,6 +95,32 @@ int main()
     t2 = std::chrono::high_resolution_clock::now();
     duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
     printf("[BENCHMARK] Finished in %llu ms\n", duration);
+
+    driver.Close();
+	
+    int pid = GetPID(L"explorer.exe");
+	if (!pid)
+	{
+        printf("[BENCHMARK] Failed to find explorer.exe\n"); // wtf
+	}
+
+    driver.Init(pid);
+
+    printf("[BENCHMARK] Reading bytes from different process...\n");  
+	DWORD64 explorerBase = driver.GetModuleInfo(L"explorer.exe", nullptr);
+	if (!explorerBase)
+	{
+        printf("[BENCHMARK] Failed to get base address of explorer.exe\n");
+	} else
+	{
+        printf("Data: ");
+		for (int i = 0; i < 20; i++)
+		{
+            uint8_t readByte = driver.Read<uint8_t>(explorerBase + i);
+            printf("%02X ", readByte);
+		}
+        printf("\n");
+	}
 
     printf("\nPress any key to exit.\n");
     getchar();
