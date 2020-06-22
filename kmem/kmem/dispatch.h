@@ -3,9 +3,21 @@
 void* originalFunction = 0;
 typedef NTSTATUS(__stdcall* fnOriginal)(PDEVICE_OBJECT device, PIRP irp);
 
+#define MAX_VIRTUAL_USERMODE 0x7FFFFFFFFFFF
+#define MIN_VIRTUAL_USERMODE 0x10000
+
 void HandleCommand(Command* cmd)
 {
-    PEPROCESS sourceProcess;
+    if (cmd->TargetAddress > MAX_VIRTUAL_USERMODE)
+        return;
+    if (cmd->TargetAddress < MIN_VIRTUAL_USERMODE)
+        return;
+    if (cmd->SourceAddress > MAX_VIRTUAL_USERMODE)
+        return;
+    if (cmd->SourceAddress < MIN_VIRTUAL_USERMODE)
+        return;
+
+	PEPROCESS sourceProcess;
     NTSTATUS status = PsLookupProcessByProcessId((HANDLE)cmd->Source, &sourceProcess);
     if (!NT_SUCCESS(status))
         return;
@@ -15,8 +27,14 @@ void HandleCommand(Command* cmd)
     if (!NT_SUCCESS(status))
         return;    
 
-    SIZE_T dummySize = 0;
-    MmCopyVirtualMemory(sourceProcess, (PVOID)cmd->SourceAddress, targetProcess, (PVOID)cmd->TargetAddress, cmd->Size, KernelMode, &dummySize);
+    if (MmIsAddressValid((void*)cmd->TargetAddress) && MmIsAddressValid((void*)cmd->SourceAddress))
+    {
+        SIZE_T dummySize = 0;
+        MmCopyVirtualMemory(sourceProcess, (PVOID)cmd->SourceAddress, targetProcess, (PVOID)cmd->TargetAddress, cmd->Size, KernelMode, &dummySize);
+    }
+
+    ObDereferenceObject(sourceProcess);
+    ObDereferenceObject(targetProcess);
 }
 
 void HandleModInfo(ModInfo* info)
