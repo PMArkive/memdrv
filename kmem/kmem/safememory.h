@@ -59,14 +59,35 @@ void CopyProcessMemory(PEPROCESS sourceProcess, PVOID sourceAddress, PEPROCESS t
 
     KAPC_STATE apcState;
     KeStackAttachProcess(sourceProcess, &apcState);
-    ProbeForRead(sourceAddress, size, 1);
+
+    HANDLE secureMemoryRead = MmSecureVirtualMemory(sourceAddress, size, PAGE_READONLY);
+	if (!secureMemoryRead)
+	{
+        KeUnstackDetachProcess(&apcState);
+        ExFreePoolWithTag(kernelBuffer, tag);
+        return;
+	}
+		
+	ProbeForRead(sourceAddress, size, 1);
     CopyMemory(kernelBuffer, sourceAddress, size, FALSE);	
-    KeUnstackDetachProcess(&apcState);
+
+    MmUnsecureVirtualMemory(secureMemoryRead);
+	KeUnstackDetachProcess(&apcState);  
 
     KeStackAttachProcess(targetProcess, &apcState);
+    HANDLE secureMemoryWrite = MmSecureVirtualMemory(targetAddress, size, PAGE_READWRITE);
+    if (!secureMemoryWrite)
+    {
+        KeUnstackDetachProcess(&apcState);
+        ExFreePoolWithTag(kernelBuffer, tag);
+        return;
+    }
+	
     ProbeForWrite(targetAddress, size, 1);
     CopyMemory(targetAddress, kernelBuffer, size, FALSE);
-    KeUnstackDetachProcess(&apcState);
+
+    MmUnsecureVirtualMemory(secureMemoryWrite);
+	KeUnstackDetachProcess(&apcState);
 
     ExFreePoolWithTag(kernelBuffer, tag);
 }
