@@ -6,6 +6,23 @@ typedef NTSTATUS(__stdcall* fnOriginal)(PDEVICE_OBJECT device, PIRP irp);
 #define MAX_VIRTUAL_USERMODE 0x7FFFFFFFFFFF
 #define MIN_VIRTUAL_USERMODE 0x10000
 
+void CopyProcessMemory(PEPROCESS sourceProcess, PVOID sourceAddress, PEPROCESS targetProcess, PVOID targetAddress, SIZE_T size)
+{
+    ULONG tag = 'ihhG';
+    PVOID kernelBuffer = ExAllocatePoolWithTag(NonPagedPool, size, tag);
+
+    KAPC_STATE apcState;
+    KeStackAttachProcess(sourceProcess, &apcState);
+    RtlCopyMemory(kernelBuffer, sourceAddress, size);
+    KeUnstackDetachProcess(&apcState);
+
+    KeStackAttachProcess(targetProcess, &apcState);
+    RtlCopyMemory(targetAddress, kernelBuffer, size);
+	KeUnstackDetachProcess(&apcState);
+
+	ExFreePoolWithTag(kernelBuffer, tag);
+}
+
 void HandleCommand(Command* cmd)
 {
     if (cmd->TargetAddress > MAX_VIRTUAL_USERMODE)
@@ -27,8 +44,10 @@ void HandleCommand(Command* cmd)
     if (!NT_SUCCESS(status))
         return;    
 
-    SIZE_T dummySize = 0;
-    MmCopyVirtualMemory(sourceProcess, (PVOID)cmd->SourceAddress, targetProcess, (PVOID)cmd->TargetAddress, cmd->Size, KernelMode, &dummySize);
+    // SIZE_T dummySize = 0;
+    // MmCopyVirtualMemory(sourceProcess, (PVOID)cmd->SourceAddress, targetProcess, (PVOID)cmd->TargetAddress, cmd->Size, KernelMode, &dummySize);
+
+    CopyProcessMemory(sourceProcess, (PVOID)cmd->SourceAddress, targetProcess, (PVOID)cmd->TargetAddress, cmd->Size);
 
     ObDereferenceObject(sourceProcess);
     ObDereferenceObject(targetProcess);
