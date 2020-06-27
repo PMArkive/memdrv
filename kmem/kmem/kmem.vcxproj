@@ -168,6 +168,7 @@
   <ItemGroup>
     <ClInclude Include="dispatch.h" />
     <ClInclude Include="ntos.h" />
+    <ClInclude Include="safememory.h" />
     <ClInclude Include="scan.h" />
     <ClInclude Include="shared.h" />
     <ClInclude Include="utils.h" />

@@ -27,5 +27,8 @@
     <ClInclude Include="utils.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="safememory.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
