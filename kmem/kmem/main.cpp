@@ -13,6 +13,10 @@
 #include "ntos.h"
 #include "scan.h"
 #include "dispatch.h"
+#include "ByePg.h"
+#include "SEH.h"
+
+#define HANDLE_SEH 1
 
 PVOID GetShellCode(DWORD64 hooked)
 {
@@ -48,10 +52,17 @@ PVOID GetShellCode(DWORD64 hooked)
     return codeBuffer;
 }
 
-NTSTATUS CustomEntry(void* dummy1, void* dummy2)
+extern "C" NTSTATUS CustomEntry(void* dummy1, void* dummy2)
 {
     UNREFERENCED_PARAMETER(dummy1);
     UNREFERENCED_PARAMETER(dummy2);
+
+	if (HANDLE_SEH) 
+	{
+		NTSTATUS ByePgStatus = ByePgInitialize(SEH::HandleException, TRUE);
+		if (!NT_SUCCESS(ByePgStatus))
+			return CSTATUS_SEH_HANDLER_FAILED;
+	}
 
 	DWORD64 diskDriverBase = FindTargetModule("disk.sys");
 	if (!diskDriverBase)

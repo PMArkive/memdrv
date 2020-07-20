@@ -61,7 +61,7 @@ PVOID FindPattern(PCHAR base, DWORD length, PCHAR pattern, PCHAR mask)
 	for (DWORD i = 0; i <= length; ++i)
 	{
 		PVOID addr = &base[i];
-		if (CheckMask(addr, pattern, mask))
+		if (CheckMask((PCHAR)addr, pattern, mask))
 		{
 			return addr;
 		}

@@ -32,7 +32,7 @@ typedef struct _PEB
 	PVOID ApiSetMap;
 } PEB, *PPEB;
 
-NTKERNELAPI PPEB NTAPI PsGetProcessPeb(PEPROCESS process);
+extern "C" NTKERNELAPI PPEB NTAPI PsGetProcessPeb(PEPROCESS process);
 
 typedef struct _LDR_DATA_TABLE_ENTRY
 {

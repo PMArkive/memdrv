@@ -7,11 +7,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.c">
-      <Filter>Source</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="scan.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -30,5 +25,16 @@
     <ClInclude Include="safememory.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="ByePg.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="SEH.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

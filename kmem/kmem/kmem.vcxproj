@@ -77,6 +77,7 @@
     <DriverType>KMDF</DriverType>
     <DriverTargetPlatform>Desktop</DriverTargetPlatform>
     <Driver_SpectreMitigation>false</Driver_SpectreMitigation>
+    <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <TargetVersion>Windows10</TargetVersion>
@@ -154,22 +155,31 @@
       <ControlFlowGuard>false</ControlFlowGuard>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <Optimization>MaxSpeed</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
       <EntryPointSymbol>CustomEntry</EntryPointSymbol>
+      <AdditionalDependencies>"C:\Users\vm\Downloads\ByePg-master\Output\ByePgLib.lib";%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Link>
+      <AdditionalDependencies>"C:\Users\vm\Downloads\ByePg-master\Output\ByePgLib.lib";%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.c" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ByePg.h" />
     <ClInclude Include="dispatch.h" />
     <ClInclude Include="ntos.h" />
     <ClInclude Include="safememory.h" />
     <ClInclude Include="scan.h" />
+    <ClInclude Include="SEH.h" />
     <ClInclude Include="shared.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
