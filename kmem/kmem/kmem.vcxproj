@@ -160,6 +160,7 @@
     <Link>
       <EntryPointSymbol>CustomEntry</EntryPointSymbol>
       <AdditionalDependencies>"C:\Users\vm\Downloads\ByePg-master\Output\ByePgLib.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
