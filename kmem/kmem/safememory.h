@@ -54,25 +54,12 @@ __forceinline BOOLEAN CopyMemory(PVOID destination, PVOID source, SIZE_T size, B
 
 void CopyProcessMemory(PEPROCESS sourceProcess, PVOID sourceAddress, PEPROCESS targetProcess, PVOID targetAddress, SIZE_T size)
 {
-    ULONG tag = 'ihaG';
-    PVOID kernelBuffer = ExAllocatePoolWithTag(NonPagedPool, size, tag);
-    SIZE_T transfered = 0;
-
-    KAPC_STATE apcState;
-    KeStackAttachProcess(sourceProcess, &apcState);
-
-    MM_COPY_ADDRESS copyAddress;
-    copyAddress.VirtualAddress = sourceAddress;
-    MmCopyMemory(kernelBuffer, copyAddress, size, MM_COPY_MEMORY_VIRTUAL, &transfered);
-	
-    KeUnstackDetachProcess(&apcState);
-
-    KeStackAttachProcess(targetProcess, &apcState);
-
-    copyAddress.VirtualAddress = kernelBuffer;
-    MmCopyMemory(targetAddress, copyAddress, size, MM_COPY_MEMORY_VIRTUAL, &transfered);
-	
-    KeUnstackDetachProcess(&apcState);
-
-    ExFreePoolWithTag(kernelBuffer, tag);
+    __try
+    {
+        SIZE_T transfered = 0;
+        MmCopyVirtualMemory(sourceProcess, sourceAddress, targetProcess, targetAddress, size, UserMode, &transfered);
+    } __except (1)
+    {
+	    
+    }
 }

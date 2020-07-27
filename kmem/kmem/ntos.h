@@ -5,6 +5,7 @@ extern "C" NTKERNELAPI NTSTATUS ObReferenceObjectByName(IN PUNICODE_STRING objec
 extern "C"  POBJECT_TYPE* IoDriverObjectType;
 
 extern "C" NTSTATUS ZwQuerySystemInformation(INT systemInformationClass, PVOID systemInformation, ULONG systemInformationLength, PULONG returnLength);
+extern "C" NTSTATUS NTAPI MmCopyVirtualMemory(PEPROCESS sourceProcess, PVOID sourceAddress, PEPROCESS targetProcess, PVOID targetAddress, SIZE_T bufferSize, KPROCESSOR_MODE previousMode, PSIZE_T returnSize);
 
 typedef struct _MM_COPY_ADDRESS {
 	union {
