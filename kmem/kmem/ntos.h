@@ -6,6 +6,18 @@ extern "C"  POBJECT_TYPE* IoDriverObjectType;
 
 extern "C" NTSTATUS ZwQuerySystemInformation(INT systemInformationClass, PVOID systemInformation, ULONG systemInformationLength, PULONG returnLength);
 
+typedef struct _MM_COPY_ADDRESS {
+	union {
+		PVOID            VirtualAddress;
+		PHYSICAL_ADDRESS PhysicalAddress;
+	};
+} MM_COPY_ADDRESS, * PMMCOPY_ADDRESS;
+
+#define MM_COPY_MEMORY_PHYSICAL             0x1
+#define MM_COPY_MEMORY_VIRTUAL              0x2
+
+extern "C" NTSTATUS MmCopyMemory(PVOID targetAddress, MM_COPY_ADDRESS sourceAddress, SIZE_T numberOfBytes, ULONG flags, PSIZE_T numberOfBytesTransferred);
+
 typedef struct _RTL_PROCESS_MODULE_INFORMATION
 {
 	HANDLE Section;
