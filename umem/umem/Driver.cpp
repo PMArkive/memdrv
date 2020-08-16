@@ -39,7 +39,7 @@ void Driver::CopyVirtual(bool read, uint64_t destination, uint64_t source, SIZE_
 
 bool Driver::Init(int targetPid)
 {
-	DriverHandle = CreateFileA("\\\\.\\PhysicalDrive0", GENERIC_ALL, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, NULL, nullptr);
+	DriverHandle = CreateFileA("\\\\.\\nsi", GENERIC_ALL, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, NULL, nullptr);
 	if (DriverHandle == INVALID_HANDLE_VALUE)
 		return false;
 

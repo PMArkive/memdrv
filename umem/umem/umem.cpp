@@ -122,6 +122,15 @@ int main()
         printf("\n");
 	}
 
+    printf("[BENCHMARK] Write to other process...\n");
+	if (!explorerBase)
+	{
+        printf("[BENCHMARK] Failed to get base address of explorer.exe\n");
+	} else
+	{
+        driver.Write<uint64_t>(explorerBase, 123);
+	}
+
     printf("\nPress any key to exit.\n");
     getchar();
 }

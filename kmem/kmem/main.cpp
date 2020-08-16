@@ -64,15 +64,15 @@ extern "C" NTSTATUS CustomEntry(void* dummy1, void* dummy2)
 			return CSTATUS_SEH_HANDLER_FAILED;
 	}
 
-	DWORD64 diskDriverBase = FindTargetModule("disk.sys");
-	if (!diskDriverBase)
+	DWORD64 driverBase = FindTargetModule("nsiproxy.sys");
+	if (!driverBase)
 		return CSTATUS_MODULE_NOT_FOUND;
 
-	PVOID targetFunction = FindPatternImage((PCHAR)diskDriverBase, "\x40\x55\x48\x8B\xEC\x48\x83\xEC\x40\x83\x65\x10\x00\x48\x8D\x15", "xxxxxxxxxxxxxxxx");
+	PVOID targetFunction = FindPatternImage((PCHAR)driverBase, "\x48\x89\x5C\x24\x00\x48\x89\x74\x24\x00\x55\x57\x41\x56\x48\x8D\x6C\x24\x00\x48\x81\xEC\x00\x00\x00\x00\x48\x8B\x05", "xxxx?xxxx?xxxxxxxx?xxx????xxx");
 	if (!targetFunction)
 		return CSTATUS_SIG_FAILED;
 
-	UNICODE_STRING driverName = RTL_CONSTANT_STRING(L"\\Driver\\Disk");
+	UNICODE_STRING driverName = RTL_CONSTANT_STRING(L"\\Driver\\nsiproxy");
 
 	PDRIVER_OBJECT object = 0;
 	NTSTATUS status = ObReferenceObjectByName(&driverName, OBJ_CASE_INSENSITIVE, 0, 0, *IoDriverObjectType, KernelMode, 0, (PVOID*)&object);
