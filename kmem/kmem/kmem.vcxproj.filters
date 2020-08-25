@@ -22,15 +22,6 @@
     <ClInclude Include="utils.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="safememory.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="ByePg.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="SEH.h">
-      <Filter>Source</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

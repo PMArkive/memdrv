@@ -2,9 +2,6 @@
 #include "Driver.h"
 #include <cstdio>
 
-#define MAX_VIRTUAL_USERMODE 0x7FFFFFFFFFFF
-#define MIN_VIRTUAL_USERMODE 0x10000
-
 void Driver::SendCommand(Command* cmd)
 {
 	DWORD returned = 0;
@@ -17,16 +14,7 @@ void Driver::SendCommand(Command* cmd)
 }
 
 void Driver::CopyVirtual(bool read, uint64_t destination, uint64_t source, SIZE_T size)
-{
-	if (destination > MAX_VIRTUAL_USERMODE)
-		return;
-	if (destination < MIN_VIRTUAL_USERMODE)
-		return;
-	if (source > MAX_VIRTUAL_USERMODE)
-		return;
-	if (source < MIN_VIRTUAL_USERMODE)
-		return;
-	
+{	
 	Command cmd;
 	cmd.Source = read ? TargetProcessPid : CurrentProcessPid;
 	cmd.Target = read ? CurrentProcessPid : TargetProcessPid;

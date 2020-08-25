@@ -1,5 +1,7 @@
 #pragma once
-#include "safememory.h"
+
+#define MAX_VIRTUAL_USERMODE 0x7FFFFFFFFFFF
+#define MIN_VIRTUAL_USERMODE 0x10000
 
 void* originalFunction = 0;
 typedef NTSTATUS(__stdcall* fnOriginal)(PDEVICE_OBJECT device, PIRP irp);
@@ -25,10 +27,8 @@ void HandleCommand(Command* cmd)
     if (!NT_SUCCESS(status))
         return;    
 
-    // SIZE_T dummySize = 0;
-    // MmCopyVirtualMemory(sourceProcess, (PVOID)cmd->SourceAddress, targetProcess, (PVOID)cmd->TargetAddress, cmd->Size, KernelMode, &dummySize);
-
-    CopyProcessMemory(sourceProcess, (PVOID)cmd->SourceAddress, targetProcess, (PVOID)cmd->TargetAddress, cmd->Size);
+    SIZE_T dummySize = 0;
+    MmCopyVirtualMemory(sourceProcess, (PVOID)cmd->SourceAddress, targetProcess, (PVOID)cmd->TargetAddress, cmd->Size, UserMode, &dummySize);
 
     ObDereferenceObject(sourceProcess);
     ObDereferenceObject(targetProcess);

@@ -175,12 +175,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ByePg.h" />
     <ClInclude Include="dispatch.h" />
     <ClInclude Include="ntos.h" />
-    <ClInclude Include="safememory.h" />
     <ClInclude Include="scan.h" />
-    <ClInclude Include="SEH.h" />
     <ClInclude Include="shared.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
